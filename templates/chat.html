@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #chat-container {
+            width: 95%;
+            /* max-width: 500px; */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2 {
+            color: #3b5998;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        #group-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            border-top: 1px solid #ddd;
+        }
+
+        #group-list li {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #group-list li:hover {
+            background-color: #f7f7f7;
+        }
+
+        #group-list li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #create-group-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        #search-container {
+            position: relative;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        #user-list {
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .user-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .user-checkbox label {
+            margin-left: 5px;
+            font-size: 0.9em;
+        }
+
+        #create-group-button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3b5998;
+            color: #fff;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #create-group-button:hover {
+            background-color: #2d4373;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h1>Welcome, {{ username }}</h1>
+
+        <!-- User's Groups Section -->
+<h2>Your Groups:</h2>
+<ul id="group-list">
+    {% for group in user_groups %}
+    <li>
+        <a href="{{ url_for('group_chat', group_name=group) }}">
+            <i class="fas fa-users"></i> <!-- Group icon -->
+            {{ group }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+
+        <!-- Create New Group Section -->
+        <div id="create-group-container">
+            <h2>Create New Group</h2>
+            <form action="{{ url_for('create_group') }}" method="post">
+                <input type="text" name="group" placeholder="Group Name" required>
+
+                <!-- Search and Select Users Section -->
+                <div id="search-container">
+                    <input type="text" id="search-input" placeholder="Search users...">
+                    <div id="user-list">
+                        {% for user in all_users %}
+                        <div class="user-checkbox">
+                            <input type="checkbox" name="selected_users" value="{{ user['username'] }}" id="user_{{ user['username'] }}">
+                            <label for="user_{{ user['username'] }}">{{ user['username'] }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button type="submit" id="create-group-button">Create Group</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for searchable user list
+        document.getElementById('search-input').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const users = document.querySelectorAll('#user-list .user-checkbox');
+            users.forEach(user => {
+                const username = user.querySelector('label').textContent.toLowerCase();
+                if (username.includes(searchValue)) {
+                    user.style.display = '';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
